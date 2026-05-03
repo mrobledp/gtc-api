@@ -1,0 +1,50 @@
+[
+  {
+    "id_contrato": "453298******1234",
+    "fecha_operacion": "2026-03-29T10:15:23",
+    "fecha_contable": "2026-03-29",
+    "importe": 45.90,
+    "moneda": "EUR",
+    "signo": "-",
+    "tipo_movimiento": "COMPRA",
+    "descripcion": "Compra supermercado",
+    "comercio": "MERCADONA",
+    "categoria": "SUPERMERCADO",
+    "codigo_autorizacion": "A12345",
+    "estado": "OK",
+    "origen": "POS",
+    "referencia_externa": "REF-0001"
+  },
+  {
+    "id_contrato": "453298******1234",
+    "fecha_operacion": "2026-03-30T18:42:10",
+    "fecha_contable": "2026-03-30",
+    "importe": 120.00,
+    "moneda": "EUR",
+    "signo": "-",
+    "tipo_movimiento": "COMPRA",
+    "descripcion": "Compra electrónica",
+    "comercio": "MEDIA MARKT",
+    "categoria": "ELECTRONICA",
+    "codigo_autorizacion": "B98765",
+    "estado": "OK",
+    "origen": "POS",
+    "referencia_externa": "REF-0002"
+  },
+  {
+    "id_contrato": "453298******1234",
+    "fecha_operacion": "2026-03-31T09:05:00",
+    "fecha_contable": "2026-03-31",
+    "importe": 1500.00,
+    "moneda": "EUR",
+    "signo": "+",
+    "tipo_movimiento": "ABONO",
+    "descripcion": "Devolución compra",
+    "comercio": "EL CORTE INGLÉS",
+    "categoria": "DEVOLUCION",
+    "codigo_autorizacion": "C54321",
+    "estado": "OK",
+    "origen": "POS",
+    "referencia_externa": "REF-0003"
+  }
+]

@@ -1,0 +1,4 @@
+-- Para ejecutar los casos de tests:
+
+docker compose exec gtc-api pytest -vv -s --full-trace
+

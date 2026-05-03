@@ -1,0 +1,37 @@
+services:
+  gtc-flyway:
+    image: flyway/flyway:10
+    container_name: gtc-flyway
+    command: >
+      -url=jdbc:postgresql://postgres-db:5432/mydb
+      -user=admin
+      -password=admin
+      -connectRetries=10
+      migrate
+    volumes:
+      - ./db/migrations:/flyway/sql
+    environment:
+      FLYWAY_DEFAULT_SCHEMA: gtc
+    restart: "no"
+    networks:
+      - my_sh_network
+
+  gtc-api:
+    build: ./api
+    container_name: gtc-api
+    ports:
+      - "8017:8000"     # 8017 hacia fuera, 8000 dentro del contenedor
+    environment:
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+      DB_NAME: mydb
+      DB_USER: admin
+      DB_PASSWORD: admin
+    networks:
+      - my_sh_network
+    depends_on:
+      - gtc-flyway       # garantiza que las migraciones se ejecutan antes del API
+
+networks:
+  my_sh_network:
+    external: true

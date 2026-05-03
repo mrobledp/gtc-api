@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [ "3.10", "3.11" ]
+
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: mydb
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+        options: >-
+          --health-cmd="pg_isready -U admin -d mydb"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: mydb
+      DB_USER: admin
+      DB_PASSWORD: admin
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        working-directory: ./api
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Add api/src to PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd)/api/src" >> $GITHUB_ENV
+
+      - name: Install Flyway
+        run: |
+          curl -L https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/10.10.0/flyway-commandline-10.10.0-linux-x64.tar.gz -o flyway.tar.gz
+          tar -xzf flyway.tar.gz
+          sudo mv flyway-10.10.0 /opt/flyway
+          sudo ln -s /opt/flyway/flyway /usr/local/bin/flyway
+
+      - name: Run Flyway migrations
+        working-directory: ./db
+        env:
+          FLYWAY_URL: jdbc:postgresql://localhost:5432/mydb
+          FLYWAY_USER: admin
+          FLYWAY_PASSWORD: admin
+        run: |
+          flyway -locations=filesystem:./migrations migrate
+
+      - name: Run tests
+        run: pytest -vv api/tests/test_movements.py
+

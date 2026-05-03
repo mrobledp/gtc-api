@@ -1,0 +1,24 @@
+
+name: CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    needs: [ "test" ]   # <-- CI debe pasar antes
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Go to project folder
+        run: cd ~/docker/proyectos/GTC
+
+      - name: Stop old containers
+        run: docker compose -f ~/docker/proyectos/GTC/docker-compose.yaml down || true
+
+      - name: Build & start new version
+        run: docker compose -f ~/docker/proyectos/GTC/docker-compose.yaml up -d --build
